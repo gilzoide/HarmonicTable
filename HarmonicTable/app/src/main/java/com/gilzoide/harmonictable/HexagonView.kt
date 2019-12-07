@@ -11,19 +11,22 @@ import kotlin.math.ceil
 import kotlin.math.sqrt
 import kotlin.math.min
 
+fun getW(radius: Float) = 2f * radius
+fun getS(radius: Float) = 1.5f * radius
+fun getH(radius: Float) = sqrt(3f) * radius
+
 const val HEXAGON_DEFAULT_RADIUS: Float = 40f
 const val HEXAGON_DEFAULT_COLOR: Int = Color.BLACK
 
-/**
- * TODO: document your custom view class.
- */
 class HexagonView : View {
     private var _paint: Paint = Paint()
     private var _path: Path = Path()
+    private var _densityRadius: Float = 0f
 
     var radius: Float = HEXAGON_DEFAULT_RADIUS
         set(value) {
             field = value
+            _densityRadius = value * resources.displayMetrics.density
             refreshPath()
             invalidate()
         }
@@ -35,16 +38,16 @@ class HexagonView : View {
             invalidate()
         }
 
-    private fun getW(): Float = 2f * radius
-    private fun getS(): Float = 1.5f * radius
-    private fun getH(): Float = sqrt(3f) * radius
+    private fun getW(): Float = getW(_densityRadius)
+    private fun getS(): Float = getS(_densityRadius)
+    private fun getH(): Float = getH(_densityRadius)
 
     private fun refreshPath() {
         val w = getW()
         val s = getS()
         val h = getH()
         val halfH = h * 0.5f
-        val sRadius = s - radius
+        val sRadius = s - _densityRadius
 
         _path.apply {
             reset()
@@ -77,9 +80,7 @@ class HexagonView : View {
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
         // Load attributes
-        val a = context.obtainStyledAttributes(
-            attrs, R.styleable.HexagonView, defStyle, 0
-        )
+        val a = context.obtainStyledAttributes(attrs, R.styleable.HexagonView, defStyle, 0)
 
         radius = a.getDimension(R.styleable.HexagonView_radius, HEXAGON_DEFAULT_RADIUS)
         strokeColor = a.getColor(R.styleable.HexagonView_strokeColor, HEXAGON_DEFAULT_COLOR)
